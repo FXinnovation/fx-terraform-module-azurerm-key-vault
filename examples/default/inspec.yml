@@ -1,0 +1,36 @@
+name: azurerm-key-vault-example-default
+title: AzureRM Key Vault - Default Example
+maintainer: FXinnovation, Inc.
+copyright: FXinnovaion, Inc.
+copyright_email: cloudsquad@fxinnovation.com
+license: MIT
+summary: Inspec for azurerm-key-vault default example
+version: 0.2.0
+depends:
+  - name: azurerm-key-vault
+    path: ../../
+  - name: azurerm-resource-group
+    url: https://scm.dazzlingwrench.fxinnovation.com/fxinnovation-public/terraform-module-azurerm-resource-group/archive/0.2.0.tar.gz
+supports:
+  - platform: azure
+inputs:
+  # key vault
+  - name: name
+    value: 'fxtstkeyvault'
+    profile: azurerm-key-vault
+  - name: location
+    value: 'francecentral'
+    profile: azurerm-key-vault
+  - name: resource_group_name
+    value: 'tftest-sa'
+    profile: azurerm-key-vault
+  - name: enabled
+    value: true
+    profile: azurerm-key-vault
+  # resource group
+  - name: enabled
+    value: true
+    profile: azurerm-resource-group
+  - name: name
+    value: 'tftest-sa'
+    profile: azurerm-resource-group
