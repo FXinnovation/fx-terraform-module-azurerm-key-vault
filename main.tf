@@ -37,7 +37,7 @@ resource "azurerm_key_vault_access_policy" "this_policy" {
   count                   = var.enabled ? length(var.policies) : 0
   key_vault_id            = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
   tenant_id               = lookup(element(var.policies, count.index), "tenant_id", null)
-  object_id               = lookup(element(var.policies, count.index), "object_id", null)
+  object_id               = lookup(element(var.policies, count.index), "object_id", null) == "" ? data.azurerm_client_config.current.object_id : lookup(element(var.policies, count.index), "object_id", null)
   key_permissions         = lookup(element(var.policies, count.index), "key_permissions", null)
   secret_permissions      = lookup(element(var.policies, count.index), "secret_permissions", null)
   certificate_permissions = lookup(element(var.policies, count.index), "certificate_permissions", null)
