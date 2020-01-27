@@ -33,12 +33,12 @@ output "secret_ids" {
 ###
 
 output "key_vault_certificate_ids" {
-  description = "Key vault Certificate ID"
+  description = "Key vault certificate id"
   value       = azurerm_key_vault_certificate.this_certificate.*.id
 }
 
 output "thumbprint" {
-  description = "Thumbprint of the Key Vault Certificate"
+  description = "Thumbprint of the key vault certificate"
   value       = azurerm_key_vault_certificate.this_certificate.*.thumbprint
 }
 

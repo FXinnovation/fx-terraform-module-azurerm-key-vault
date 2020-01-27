@@ -35,12 +35,12 @@ resource "azurerm_key_vault" "this" {
 
 resource "azurerm_key_vault_access_policy" "this_policy" {
   count                   = var.enabled ? length(var.policies) : 0
-  key_vault_id            = azurerm_key_vault.this[0].id
-  tenant_id               = var.policies[count.index].tenant_id
-  object_id               = var.policies[count.index].object_id
-  key_permissions         = var.policies[count.index].key_permissions
-  secret_permissions      = var.policies[count.index].secret_permissions
-  certificate_permissions = var.policies[count.index].certificate_permissions
+  key_vault_id            = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
+  tenant_id               = lookup(element(var.policies, count.index), "tenant_id", null)
+  object_id               = lookup(element(var.policies, count.index), "object_id", null)
+  key_permissions         = lookup(element(var.policies, count.index), "key_permissions", null)
+  secret_permissions      = lookup(element(var.policies, count.index), "secret_permissions", null)
+  certificate_permissions = lookup(element(var.policies, count.index), "certificate_permissions", null)
 }
 
 resource "random_password" "this_password" {
@@ -56,12 +56,13 @@ resource "azurerm_key_vault_secret" "this_secret" {
   count        = var.enabled ? length(var.vault_secret_name) : 0
   name         = element(var.vault_secret_name, count.index)
   value        = element(var.value, count.index) != "" ? element(var.value, count.index) : random_password.this_password[count.index].result
-  key_vault_id = azurerm_key_vault.this[0].id
+  key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
   depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.this_policy]
   tags = merge(
     {
       "Terraform" = "true"
     },
+    var.tags,
     var.vault_secret_tags,
   )
 }
@@ -69,7 +70,7 @@ resource "azurerm_key_vault_secret" "this_secret" {
 resource "azurerm_key_vault_certificate" "this_certificate" {
   count        = local.should_create_certificate ? 1 : 0
   name         = var.certificate_name
-  key_vault_id = azurerm_key_vault.this[count.index].id
+  key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
 
   certificate_policy {
     issuer_parameters {
@@ -97,6 +98,7 @@ resource "azurerm_key_vault_certificate" "this_certificate" {
     {
       "Terraform" = "true"
     },
+    var.tags,
     var.certificate_tags,
   )
 
@@ -104,17 +106,18 @@ resource "azurerm_key_vault_certificate" "this_certificate" {
 
 resource "azurerm_key_vault_key" "this_key" {
   count        = var.enabled ? length(var.key_vault_keys) : 0
-  name         = var.key_vault_keys[count.index].name
-  key_vault_id = azurerm_key_vault.this[0].id
-  key_type     = var.key_vault_keys[count.index].key_type
-  key_size     = var.key_vault_keys[count.index].key_size
-  key_opts     = var.key_vault_keys[count.index].key_opts
-  curve        = var.key_vault_keys[count.index].curve
+  name         = lookup(element(var.key_vault_keys, count.index), "name", null)
+  key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
+  key_type     = lookup(element(var.key_vault_keys, count.index), "key_type", null)
+  key_size     = lookup(element(var.key_vault_keys, count.index), "key_size", null)
+  key_opts     = lookup(element(var.key_vault_keys, count.index), "key_opts", null)
+  curve        = lookup(element(var.key_vault_keys, count.index), "curve", null)
   depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.this_policy]
   tags = merge(
     {
       "Terraform" = "true"
     },
+    var.tags,
     var.vault_key_tags,
   )
 }
