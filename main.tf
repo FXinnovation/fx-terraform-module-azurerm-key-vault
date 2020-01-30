@@ -8,7 +8,8 @@ locals {
 ###
 
 resource "azurerm_key_vault" "this" {
-  count                           = var.enabled ? 1 : 0
+  count = var.enabled ? 1 : 0
+
   name                            = var.key_vault_name
   location                        = var.location
   resource_group_name             = var.resource_group_name
@@ -34,7 +35,8 @@ resource "azurerm_key_vault" "this" {
 }
 
 resource "azurerm_key_vault_access_policy" "this_policy" {
-  count                   = var.enabled ? length(var.policies) : 0
+  count = var.enabled ? length(var.policies) : 0
+
   key_vault_id            = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
   tenant_id               = lookup(element(var.policies, count.index), "tenant_id", null)
   object_id               = lookup(element(var.policies, count.index), "object_id", null) == "" ? data.azurerm_client_config.current.object_id : lookup(element(var.policies, count.index), "object_id", null)
@@ -53,8 +55,9 @@ resource "random_password" "this_password" {
 }
 
 resource "azurerm_key_vault_secret" "this_secret" {
-  count        = var.enabled ? length(var.vault_secret_name) : 0
-  name         = element(var.vault_secret_name, count.index)
+  count = var.enabled ? length(var.vault_secret_name) : 0
+
+  name         = var.vault_secret_name[count.index]
   value        = element(var.value, count.index) != "" ? element(var.value, count.index) : random_password.this_password[count.index].result
   key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
   depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.this_policy]
@@ -68,26 +71,27 @@ resource "azurerm_key_vault_secret" "this_secret" {
 }
 
 resource "azurerm_key_vault_certificate" "this_certificate" {
-  count        = local.should_create_certificate ? 1 : 0
-  name         = var.certificate_name
+  count = local.should_create_certificate ? length(var.certificate_names) : 0
+
+  name         = var.certificate_names[count.index]
   key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
 
   certificate_policy {
     issuer_parameters {
-      name = var.issuer_name
+      name = var.issuer_name[count.index]
     }
     key_properties {
       exportable = var.exportable
       key_size   = var.key_size
-      key_type   = var.key_type
+      key_type   = var.key_type[count.index]
       reuse_key  = var.reuse_key
     }
     secret_properties {
-      content_type = var.content_type
+      content_type = var.content_type[count.index]
     }
     lifetime_action {
       action {
-        action_type = var.action_type
+        action_type = var.action_type[count.index]
       }
       trigger {
         days_before_expiry = var.days_before_expiry
@@ -105,7 +109,8 @@ resource "azurerm_key_vault_certificate" "this_certificate" {
 }
 
 resource "azurerm_key_vault_key" "this_key" {
-  count        = var.enabled ? length(var.key_vault_keys) : 0
+  count = var.enabled ? length(var.key_vault_keys) : 0
+
   name         = lookup(element(var.key_vault_keys, count.index), "name", null)
   key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
   key_type     = lookup(element(var.key_vault_keys, count.index), "key_type", null)
@@ -118,6 +123,6 @@ resource "azurerm_key_vault_key" "this_key" {
       "Terraform" = "true"
     },
     var.tags,
-    var.vault_key_tags,
+    var.key_vault_key_tags,
   )
 }

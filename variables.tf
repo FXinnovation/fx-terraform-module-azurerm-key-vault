@@ -88,7 +88,6 @@ variable "vault_secret_name" {
   default = [""]
 }
 
-
 variable "vault_secret_tags" {
   description = "Tag that will be added to the ker vault secret"
   default     = {}
@@ -99,8 +98,6 @@ variable "value" {
   type        = list(string)
   default     = [""]
 }
-
-
 
 ###
 # key vault certificate
@@ -113,14 +110,14 @@ variable "certificate_enabled" {
 
 variable "certificate_name" {
   description = "Name of the key vault certificate."
-  type        = string
-  default     = ""
+  type        = list(string)
+  default     = []
 }
 
 variable "issuer_name" {
   description = "The name of the Certificate Issuer. Possible values ( `Self`(for self-signed) or `unknown`(for a certificate issuing authority like Let's Encrypt and Azure direct supported one. )"
-  type        = string
-  default     = ""
+  type        = list(string)
+  default     = []
 }
 
 variable "exportable" {
@@ -135,25 +132,26 @@ variable "reuse_key" {
 
 variable "key_size" {
   description = "The size of the Key used in the Certificate"
+  type        = list(string)
   default     = 2048
 }
 
 variable "key_type" {
-  description = "Specifies the Type of Key."
-  type        = string
-  default     = ""
+  description = "The type of the key wich will be created such as `RSA`. changing this forces a new resourceto be created."
+  type        = list(string)
+  default     = []
 }
 
 variable "content_type" {
   description = "The Content-Type of the Certificate, such as `application/x-pkcs12` for a PFX or `application/x-pem-file` for a PEM."
-  type        = string
-  default     = ""
+  type        = list(string)
+  default     = []
 }
 
 variable "action_type" {
   description = "The Type of action to be performed when the lifetime trigger is triggerec."
-  type        = string
-  default     = ""
+  type        = list(string)
+  default     = []
 }
 
 variable "days_before_expiry" {
@@ -165,7 +163,6 @@ variable "certificate_tags" {
   description = "Tag that will be added to the certificate."
   default     = {}
 }
-
 
 ###
 # key vault keys
@@ -183,7 +180,7 @@ variable "key_vault_keys" {
   default = []
 }
 
-variable "vault_key_tags" {
+variable "key_vault_key_tags" {
   description = "Tags to add to the key vault_key"
   default     = {}
 }

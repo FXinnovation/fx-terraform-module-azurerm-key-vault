@@ -21,11 +21,11 @@ See `examples` folders for usage of this module.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:-----:|
-| action\_type | The Type of action to be performed when the lifetime trigger is triggerec. | `string` | `""` | no |
+| action\_type | The Type of action to be performed when the lifetime trigger is triggerec. | `list(string)` | `[]` | no |
 | certificate\_enabled | Boolean flag to enable the key vault certificate | `bool` | `false` | no |
-| certificate\_name | Name of the key vault certificate. | `string` | `""` | no |
+| certificate\_name | Name of the key vault certificate. | `list(string)` | `[]` | no |
 | certificate\_tags | Tag that will be added to the certificate. | `map` | `{}` | no |
-| content\_type | The Content-Type of the Certificate, such as `application/x-pkcs12` for a PFX or `application/x-pem-file` for a PEM. | `string` | `""` | no |
+| content\_type | The Content-Type of the Certificate, such as `application/x-pkcs12` for a PFX or `application/x-pem-file` for a PEM. | `list(string)` | `[]` | no |
 | days\_before\_expiry | The number of days before the Certificate expires that the action associated with this Trigger should run. | `number` | `30` | no |
 | enabled | Enable or disable module | `bool` | `true` | no |
 | enabled\_for\_deployment | Boolean flag to specify whether Azure VM's are permitted to retrive certificate stored as secret from key vault. | `bool` | `false` | no |
@@ -33,9 +33,9 @@ See `examples` folders for usage of this module.
 | enabled\_for\_template\_deployment | Boolean flag to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault. | `bool` | `false` | no |
 | exportable | Boolean flag to define is this Certificate Exportable | `bool` | `false` | no |
 | ip\_rules | One or more IP Addresses, or CIDR Blocks which should be able to access the Key Vault. | `list(string)` | n/a | yes |
-| issuer\_name | The name of the Certificate Issuer. Possible values ( `Self`(for self-signed) or `unknown`(for a certificate issuing authority like Let's Encrypt and Azure direct supported one. ) | `string` | `""` | no |
+| issuer\_name | The name of the Certificate Issuer. Possible values ( `Self`(for self-signed) or `unknown`(for a certificate issuing authority like Let's Encrypt and Azure direct supported one. ) | `list(string)` | `[]` | no |
 | key\_size | The size of the Key used in the Certificate | `number` | `2048` | no |
-| key\_type | Specifies the Type of Key. | `string` | `""` | no |
+| key\_type | The type of the key wich will be created such as `RSA`. changing this forces a new resourceto be created. | `list(string)` | `[]` | no |
 | key\_vault\_keys | Map of the key attributes. | <pre>list(object({<br>    name     = string<br>    key_type = string<br>    key_size = string<br>    key_opts = list(string)<br>    curve    = string<br>  }))<br></pre> | `[]` | no |
 | key\_vault\_name | name of the Key vault created | `string` | n/a | yes |
 | location | location of the load\_balancer | `string` | n/a | yes |
@@ -46,7 +46,7 @@ See `examples` folders for usage of this module.
 | subnet\_id\_maps | One or more Subnet ID's which should be able to access this Key Vault. | `list(string)` | n/a | yes |
 | tags | Tags to add to the Load Balancer | `map` | `{}` | no |
 | value | List of key valut secret that will cretaed. changing this will force to create new secret. | `list(string)` | <pre>[<br>  ""<br>]<br></pre> | no |
-| vault\_key\_tags | Tags to add to the key vault\_key | `map` | `{}` | no |
+| key\_vault\_key\_tags | Tags to add to the key vault\_key | `map` | `{}` | no |
 | vault\_secret\_name | n/a | `list(string)` | <pre>[<br>  ""<br>]<br></pre> | no |
 | vault\_secret\_tags | Tag that will be added to the ker vault secret | `map` | `{}` | no |
 
