@@ -108,7 +108,7 @@ variable "certificate_enabled" {
   default     = false
 }
 
-variable "certificate_name" {
+variable "certificate_names" {
   description = "Name of the key vault certificate."
   type        = list(string)
   default     = []
@@ -133,7 +133,7 @@ variable "reuse_key" {
 variable "key_size" {
   description = "The size of the Key used in the Certificate"
   type        = list(string)
-  default     = 2048
+  default     = []
 }
 
 variable "key_type" {

@@ -23,7 +23,7 @@ See `examples` folders for usage of this module.
 |------|-------------|------|---------|:-----:|
 | action\_type | The Type of action to be performed when the lifetime trigger is triggerec. | `list(string)` | `[]` | no |
 | certificate\_enabled | Boolean flag to enable the key vault certificate | `bool` | `false` | no |
-| certificate\_name | Name of the key vault certificate. | `list(string)` | `[]` | no |
+| certificate\_names | Name of the key vault certificate. | `list(string)` | `[]` | no |
 | certificate\_tags | Tag that will be added to the certificate. | `map` | `{}` | no |
 | content\_type | The Content-Type of the Certificate, such as `application/x-pkcs12` for a PFX or `application/x-pem-file` for a PEM. | `list(string)` | `[]` | no |
 | days\_before\_expiry | The number of days before the Certificate expires that the action associated with this Trigger should run. | `number` | `30` | no |
@@ -34,7 +34,7 @@ See `examples` folders for usage of this module.
 | exportable | Boolean flag to define is this Certificate Exportable | `bool` | `false` | no |
 | ip\_rules | One or more IP Addresses, or CIDR Blocks which should be able to access the Key Vault. | `list(string)` | n/a | yes |
 | issuer\_name | The name of the Certificate Issuer. Possible values ( `Self`(for self-signed) or `unknown`(for a certificate issuing authority like Let's Encrypt and Azure direct supported one. ) | `list(string)` | `[]` | no |
-| key\_size | The size of the Key used in the Certificate | `number` | `2048` | no |
+| key\_size | The size of the Key used in the Certificate | `list(string` | `[]` | no |
 | key\_type | The type of the key wich will be created such as `RSA`. changing this forces a new resourceto be created. | `list(string)` | `[]` | no |
 | key\_vault\_keys | Map of the key attributes. | <pre>list(object({<br>    name     = string<br>    key_type = string<br>    key_size = string<br>    key_opts = list(string)<br>    curve    = string<br>  }))<br></pre> | `[]` | no |
 | key\_vault\_name | name of the Key vault created | `string` | n/a | yes |

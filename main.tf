@@ -82,7 +82,7 @@ resource "azurerm_key_vault_certificate" "this_certificate" {
     }
     key_properties {
       exportable = var.exportable
-      key_size   = var.key_size
+      key_size   = var.key_size[count.index]
       key_type   = var.key_type[count.index]
       reuse_key  = var.reuse_key
     }
