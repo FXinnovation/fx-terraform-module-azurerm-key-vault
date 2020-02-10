@@ -23,6 +23,7 @@ resource "azurerm_subnet" "example" {
   resource_group_name  = azurerm_resource_group.example.name
   virtual_network_name = azurerm_virtual_network.example.name
   address_prefix       = "192.172.1.0/24"
+  service_endpoints    = ["Microsoft.KeyVault"]
 }
 
 module "key_vault_demo" {
