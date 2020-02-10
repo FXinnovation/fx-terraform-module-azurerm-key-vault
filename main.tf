@@ -1,5 +1,10 @@
+###
+# locals
+###
+
 locals {
   should_create_certificate = var.enabled && var.certificate_enabled
+  should_create_secret      = var.enabled && var.secret_enabled
 }
 
 
@@ -19,18 +24,23 @@ resource "azurerm_key_vault" "this" {
   enabled_for_disk_encryption     = var.enabled_for_disk_encryption
   enabled_for_template_deployment = var.enabled_for_template_deployment
 
-  network_acls {
-    bypass                     = "AzureServices"
-    default_action             = "Allow"
-    ip_rules                   = var.ip_rules
-    virtual_network_subnet_ids = var.subnet_id_maps
+  dynamic "network_acls" {
+    for_each = var.network_acl
+
+    content {
+      bypass                     = network_acls.value.bypass
+      default_action             = network_acls.value.default_action
+      ip_rules                   = network_acls.value.ip_rules
+      virtual_network_subnet_ids = network_acls.value.virtual_network_subnet_ids
+    }
   }
 
   tags = merge(
+    var.tags,
+    var.key_vault_tags,
     {
       "Terraform" = "true"
     },
-    var.tags,
   )
 }
 
@@ -46,7 +56,8 @@ resource "azurerm_key_vault_access_policy" "this_policy" {
 }
 
 resource "random_password" "this_password" {
-  count       = var.enabled ? length(var.vault_secret_name) : 0
+  count = local.should_create_secret ? length(var.key_vault_secrets) : 0
+
   length      = 16
   min_lower   = 3
   min_upper   = 3
@@ -55,43 +66,43 @@ resource "random_password" "this_password" {
 }
 
 resource "azurerm_key_vault_secret" "this_secret" {
-  count = var.enabled ? length(var.vault_secret_name) : 0
+  count = local.should_create_secret ? length(var.key_vault_secrets) : 0
 
-  name         = var.vault_secret_name[count.index]
-  value        = element(var.value, count.index) != "" ? element(var.value, count.index) : random_password.this_password[count.index].result
+  name         = element(var.key_vault_secrets, count.index)
+  value        = element(var.values, count.index) != "" ? element(var.values, count.index) : random_password.this_password[count.index].result
   key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
   depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.this_policy]
   tags = merge(
+    var.tags,
+    var.vault_secret_tags,
     {
       "Terraform" = "true"
     },
-    var.tags,
-    var.vault_secret_tags,
   )
 }
 
 resource "azurerm_key_vault_certificate" "this_certificate" {
   count = local.should_create_certificate ? length(var.certificate_names) : 0
 
-  name         = var.certificate_names[count.index]
+  name         = element(var.certificate_names, count.index)
   key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
 
   certificate_policy {
     issuer_parameters {
-      name = var.issuer_name[count.index]
+      name = var.issuer_names[count.index]
     }
     key_properties {
       exportable = var.exportable
-      key_size   = var.key_size[count.index]
-      key_type   = var.key_type[count.index]
+      key_size   = var.key_sizes[count.index]
+      key_type   = var.key_types[count.index]
       reuse_key  = var.reuse_key
     }
     secret_properties {
-      content_type = var.content_type[count.index]
+      content_type = var.content_types[count.index]
     }
     lifetime_action {
       action {
-        action_type = var.action_type[count.index]
+        action_type = var.action_types[count.index]
       }
       trigger {
         days_before_expiry = var.days_before_expiry
@@ -99,13 +110,12 @@ resource "azurerm_key_vault_certificate" "this_certificate" {
     }
   }
   tags = merge(
+    var.tags,
+    var.certificate_tags,
     {
       "Terraform" = "true"
     },
-    var.tags,
-    var.certificate_tags,
   )
-
 }
 
 resource "azurerm_key_vault_key" "this_key" {
@@ -119,10 +129,10 @@ resource "azurerm_key_vault_key" "this_key" {
   curve        = lookup(element(var.key_vault_keys, count.index), "curve", null)
   depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.this_policy]
   tags = merge(
+    var.tags,
+    var.key_vault_key_tags,
     {
       "Terraform" = "true"
     },
-    var.tags,
-    var.key_vault_key_tags,
   )
 }

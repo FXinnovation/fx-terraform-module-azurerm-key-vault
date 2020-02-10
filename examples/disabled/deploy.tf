@@ -10,11 +10,4 @@ module "key_vault_demo" {
   source = "../.."
 
   enabled = false
-
-  key_vault_name      = "tftest"
-  resource_group_name = module.resource_group_demo.name
-  location            = "francecentral"
-  sku_name            = "standard"
-  certificate_enabled = false
-  policies            = []
 }

@@ -10,11 +10,13 @@ variable "enabled" {
 variable "resource_group_name" {
   description = "Resource group where the vnet resides."
   type        = string
+  default     = ""
 }
 
 variable "location" {
   description = "location of the load_balancer"
   type        = string
+  default     = ""
 }
 
 variable "tags" {
@@ -29,6 +31,7 @@ variable "tags" {
 variable "key_vault_name" {
   description = "name of the Key vault created"
   type        = string
+  default     = ""
 }
 
 variable "sku_name" {
@@ -60,7 +63,19 @@ variable "ip_rules" {
 variable "subnet_id_maps" {
   description = "One or more Subnet ID's which should be able to access this Key Vault."
   type        = list(string)
+  default     = [""]
+}
+
+variable "network_acl" {
+  description = "one or more network acls associated to the key vault. Please check the terraform docs for the possible value `https://www.terraform.io/docs/providers/azurerm/r/key_vault_certificate.html`"
   default     = []
+  type        = list(object({ bypass = list(string), default_action = list(string), ip_rules = list(string), virtual_network_subnet_ids = list(string) }))
+}
+
+
+variable "key_vault_tags" {
+  description = "List of tags to which will be added to the key vault."
+  default     = {}
 }
 
 ###
@@ -83,9 +98,15 @@ variable "policies" {
 # key vault secret
 ###
 
-variable "vault_secret_name" {
-  type    = list(string)
-  default = [""]
+variable "secret_enabled" {
+  description = "Boolean flag to specify whether to create the secret in the key valut or not."
+  default     = false
+}
+
+variable "key_vault_secrets" {
+  description = "List of key valut secrets names. Changing this will force to create new secret in the key vault."
+  type        = list(string)
+  default     = [""]
 }
 
 variable "vault_secret_tags" {
@@ -93,7 +114,7 @@ variable "vault_secret_tags" {
   default     = {}
 }
 
-variable "value" {
+variable "values" {
   description = "List of key valut secret that will cretaed. changing this will force to create new secret."
   type        = list(string)
   default     = [""]
@@ -114,7 +135,7 @@ variable "certificate_names" {
   default     = []
 }
 
-variable "issuer_name" {
+variable "issuer_names" {
   description = "The name of the Certificate Issuer. Possible values ( `Self`(for self-signed) or `unknown`(for a certificate issuing authority like Let's Encrypt and Azure direct supported one. )"
   type        = list(string)
   default     = []
@@ -130,28 +151,28 @@ variable "reuse_key" {
   default     = false
 }
 
-variable "key_size" {
+variable "key_sizes" {
   description = "The size of the Key used in the Certificate"
   type        = list(string)
-  default     = []
+  default     = [""]
 }
 
-variable "key_type" {
+variable "key_types" {
   description = "The type of the key wich will be created such as `RSA`. changing this forces a new resourceto be created."
   type        = list(string)
-  default     = []
+  default     = [""]
 }
 
-variable "content_type" {
+variable "content_types" {
   description = "The Content-Type of the Certificate, such as `application/x-pkcs12` for a PFX or `application/x-pem-file` for a PEM."
   type        = list(string)
-  default     = []
+  default     = [""]
 }
 
-variable "action_type" {
-  description = "The Type of action to be performed when the lifetime trigger is triggerec."
+variable "action_types" {
+  description = "The Type of action to be performed when the lifetime trigger is triggerec.possible values include `Autorenew` & ``EmailContacts. changing this forces a new resource to be created. "
   type        = list(string)
-  default     = []
+  default     = [""]
 }
 
 variable "days_before_expiry" {

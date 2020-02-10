@@ -4,14 +4,29 @@ module "resource_group_demo" {
   name     = "tftest-sa"
 }
 
+resource "azurerm_virtual_network" "example" {
+  name                = "fxtoto"
+  address_space       = ["10.0.0.0/16"]
+  location            = "francecentral"
+  resource_group_name = module.resource_group_demo.name
+}
+
+resource "azurerm_subnet" "example" {
+  name                 = "tftest${random_string.this.result}"
+  resource_group_name  = azurerm_resource_group.example.name
+  virtual_network_name = azurerm_virtual_network.example.name
+  address_prefix       = "10.0.0.0/24"
+}
+
 module "key_vault_demo" {
   source              = "../.."
   key_vault_name      = "fxtstkeyvault"
   location            = "francecentral"
   resource_group_name = module.resource_group_demo.name
   sku_name            = "standard"
-  vault_secret_name   = ["foo"]
-  value               = ["thisistestvalue"]
+  key_vault_secrets   = ["foo"]
+  values              = ["thisistestvalue"]
+  secret_enabled      = true
   certificate_enabled = false
   key_vault_keys      = []
   policies = [
@@ -23,6 +38,15 @@ module "key_vault_demo" {
 
       certificate_permissions = ["create", "delete", "deleteissuers", "get", "getissuers", "import", "list", "listissuers", "managecontacts", "manageissuers", "purge",
       "recover", "setissuers", "update", "backup", "restore", ]
+    }
+  ]
+
+  network_acls = [
+    {
+      bypass                     = ["AzureServices"]
+      default_action             = ["Allow"]
+      ip_rules                   = ["10.0.1.16/24"]
+      virtual_network_subnet_ids = ["${azurerm_subnet.example.id}"]
     }
   ]
 }
