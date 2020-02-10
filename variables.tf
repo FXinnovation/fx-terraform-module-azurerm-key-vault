@@ -69,7 +69,7 @@ variable "subnet_id_maps" {
 variable "network_acl" {
   description = "one or more network acls associated to the key vault. Please check the terraform docs for the possible value `https://www.terraform.io/docs/providers/azurerm/r/key_vault_certificate.html`"
   default     = []
-  type        = list(object({ bypass = list(string), default_action = list(string), ip_rules = list(string), virtual_network_subnet_ids = list(string) }))
+  type        = list(object({ bypass = string, default_action = string, ip_rules = list(string), virtual_network_subnet_ids = list(string) }))
 }
 
 

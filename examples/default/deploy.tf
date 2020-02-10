@@ -50,8 +50,8 @@ module "key_vault_demo" {
 
   network_acl = [
     {
-      bypass                     = ["AzureServices"]
-      default_action             = ["Allow"]
+      bypass                     = "AzureServices"
+      default_action             = "Allow"
       ip_rules                   = ["10.0.1.16/24"]
       virtual_network_subnet_ids = ["${azurerm_subnet.example.id}"]
     }

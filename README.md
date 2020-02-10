@@ -42,7 +42,7 @@ See `examples` folders for usage of this module.
 | key\_vault\_secrets | List of key valut secrets names. Changing this will force to create new secret in the key vault. | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 | key\_vault\_tags | List of tags to which will be added to the key vault. | `map` | `{}` | no |
 | location | location of the load\_balancer | `string` | `""` | no |
-| network\_acl | one or more network acls associated to the key vault. Please check the terraform docs for the possible value `https://www.terraform.io/docs/providers/azurerm/r/key_vault_certificate.html` | `list(object({ bypass = list(string), default_action = list(string), ip_rules = list(string), virtual_network_subnet_ids = list(string) }))` | `[]` | no |
+| network\_acl | one or more network acls associated to the key vault. Please check the terraform docs for the possible value `https://www.terraform.io/docs/providers/azurerm/r/key_vault_certificate.html` | `list(object({ bypass = string, default_action = string, ip_rules = list(string), virtual_network_subnet_ids = list(string) }))` | `[]` | no |
 | policies | List of policies that are created for this key vault. | <pre>list(object({<br>    tenant_id               = string<br>    object_id               = string<br>    key_permissions         = list(string)<br>    secret_permissions      = list(string)<br>    certificate_permissions = list(string)<br>  }))</pre> | `[]` | no |
 | resource\_group\_name | Resource group where the vnet resides. | `string` | `""` | no |
 | reuse\_key | Boolean flag to decide whether to use the existing key again or not | `bool` | `false` | no |
