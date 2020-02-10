@@ -7,7 +7,6 @@ locals {
   should_create_secret      = var.enabled && var.secret_enabled
 }
 
-
 ###
 # Key Vault
 ###

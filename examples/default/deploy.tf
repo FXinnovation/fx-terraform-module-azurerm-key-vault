@@ -1,7 +1,15 @@
+data "azurerm_client_config" "current" {}
+
+resource "random_string" "this" {
+  length  = 6
+  upper   = false
+  special = false
+}
+
 module "resource_group_demo" {
   source   = "git::ssh://git@scm.dazzlingwrench.fxinnovation.com:2222/fxinnovation-public/terraform-module-azurerm-resource-group.git?ref=0.2.0"
   location = "francecentral"
-  name     = "tftest-sa"
+  name     = "tftest${random_string.this.result}"
 }
 
 resource "azurerm_virtual_network" "example" {
@@ -20,7 +28,7 @@ resource "azurerm_subnet" "example" {
 
 module "key_vault_demo" {
   source              = "../.."
-  key_vault_name      = "fxtstkeyvault"
+  key_vault_name      = "fxtst${random_string.this.result}"
   location            = "francecentral"
   resource_group_name = module.resource_group_demo.name
   sku_name            = "standard"
@@ -32,7 +40,7 @@ module "key_vault_demo" {
   policies = [
     {
       tenant_id          = "${var.tenant_id}"
-      object_id          = ""
+      object_id          = "${data.azurerm_client_config.current.object_id}"
       key_permissions    = ["backup", "create", "decrypt", "delete", "encrypt", "get", "import", "list", "purge", "recover", "restore", "sign", "unwrapKey", "update", "verify", "wrapKey", ]
       secret_permissions = ["backup", "delete", "get", "list", "purge", "recover", "restore", "set", ]
 
@@ -41,7 +49,7 @@ module "key_vault_demo" {
     }
   ]
 
-  network_acls = [
+  network_acl = [
     {
       bypass                     = ["AzureServices"]
       default_action             = ["Allow"]
