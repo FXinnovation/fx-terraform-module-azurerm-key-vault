@@ -13,7 +13,7 @@ resource "azurerm_resource_group" "example" {
 
 resource "azurerm_virtual_network" "example" {
   name                = "fxtoto"
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["192.172.0.0/16"]
   location            = "francecentral"
   resource_group_name = azurerm_resource_group.example.name
 }
@@ -22,7 +22,7 @@ resource "azurerm_subnet" "example" {
   name                 = "tftest${random_string.this.result}"
   resource_group_name  = azurerm_resource_group.example.name
   virtual_network_name = azurerm_virtual_network.example.name
-  address_prefix       = "10.0.0.0/24"
+  address_prefix       = "192.172.1.0/24"
 }
 
 module "key_vault_demo" {
@@ -52,7 +52,7 @@ module "key_vault_demo" {
     {
       bypass                     = "AzureServices"
       default_action             = "Allow"
-      ip_rules                   = ["10.0.0.16"]
+      ip_rules                   = ["192.172.1.10"]
       virtual_network_subnet_ids = ["${azurerm_subnet.example.id}"]
     }
   ]
