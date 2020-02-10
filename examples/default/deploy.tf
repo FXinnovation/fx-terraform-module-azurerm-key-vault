@@ -6,17 +6,16 @@ resource "random_string" "this" {
   special = false
 }
 
-module "resource_group_demo" {
-  source   = "git::ssh://git@scm.dazzlingwrench.fxinnovation.com:2222/fxinnovation-public/terraform-module-azurerm-resource-group.git?ref=0.2.0"
-  location = "francecentral"
+resource "azurerm_resource_group" "example" {
   name     = "tftest${random_string.this.result}"
+  location = "francecentral"
 }
 
 resource "azurerm_virtual_network" "example" {
   name                = "fxtoto"
   address_space       = ["10.0.0.0/16"]
   location            = "francecentral"
-  resource_group_name = module.resource_group_demo.name
+  resource_group_name = azurerm_resource_group.example.name
 }
 
 resource "azurerm_subnet" "example" {
@@ -30,7 +29,7 @@ module "key_vault_demo" {
   source              = "../.."
   key_vault_name      = "fxtst${random_string.this.result}"
   location            = "francecentral"
-  resource_group_name = module.resource_group_demo.name
+  resource_group_name = azurerm_resource_group.example.name
   sku_name            = "standard"
   key_vault_secrets   = ["foo"]
   values              = ["thisistestvalue"]
