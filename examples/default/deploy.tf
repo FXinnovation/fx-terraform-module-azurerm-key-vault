@@ -37,11 +37,14 @@ module "key_vault_demo" {
   location            = "francecentral"
   resource_group_name = azurerm_resource_group.example.name
   sku_name            = "standard"
-  key_vault_secrets   = ["foo"]
-  values              = ["thisistestvalue"]
-  secret_enabled      = true
-  certificate_enabled = false
-  key_vault_keys      = []
+  network_acl = [
+    {
+      bypass                     = "AzureServices"
+      default_action             = "Allow"
+      ip_rules                   = ["192.172.1.10"]
+      virtual_network_subnet_ids = ["${azurerm_subnet.example.id}"]
+    }
+  ]
   policies = [
     {
       tenant_id          = "${var.tenant_id}"
@@ -62,12 +65,10 @@ module "key_vault_demo" {
       "recover", "setissuers", "update", "backup", "restore", ]
     }
   ]
-  network_acl = [
-    {
-      bypass                     = "AzureServices"
-      default_action             = "Allow"
-      ip_rules                   = ["192.172.1.10"]
-      virtual_network_subnet_ids = ["${azurerm_subnet.example.id}"]
-    }
-  ]
+
+  key_vault_secrets   = ["foo"]
+  values              = ["thisistestvalue"]
+  secret_enabled      = true
+  certificate_enabled = false
+  key_vault_keys      = []
 }
