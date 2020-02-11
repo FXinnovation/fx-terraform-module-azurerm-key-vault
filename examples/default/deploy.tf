@@ -41,7 +41,7 @@ module "key_vault_demo" {
     {
       bypass                     = "AzureServices"
       default_action             = "Allow"
-      ip_rules                   = ["192.172.1.10"]
+      ip_rules                   = ["192.172.1.10/32"]
       virtual_network_subnet_ids = ["${azurerm_subnet.example.id}"]
     }
   ]
