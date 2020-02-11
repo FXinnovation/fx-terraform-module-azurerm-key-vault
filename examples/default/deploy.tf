@@ -6,11 +6,10 @@ resource "random_string" "this" {
   special = false
 }
 
-module "example" {
-  source = "git::https://scm.dazzlingwrench.fxinnovation.com/fxinnovation-public/terraform-module-azuread-service-principal.git?ref=1.0.5"
-
-  application_name = "${random_string.this.result}-service-principal"
+resource "azuread_group" "example" {
+  name = "toto${random_string.this.result}"
 }
+
 
 resource "azurerm_resource_group" "example" {
   name     = "tftest${random_string.this.result}"
@@ -46,7 +45,7 @@ module "key_vault_demo" {
   policies = [
     {
       tenant_id          = "${var.tenant_id}"
-      object_id          = "${module.example.service_principal_object_id}"
+      object_id          = "${azureread_group.example.id}"
       key_permissions    = ["backup", "create", "decrypt", "delete", "encrypt", "get", "import", "list", "purge", "recover", "restore", "sign", "unwrapKey", "update", "verify", "wrapKey", ]
       secret_permissions = ["backup", "delete", "get", "list", "purge", "recover", "restore", "set", ]
 
