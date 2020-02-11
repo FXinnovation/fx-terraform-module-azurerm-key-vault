@@ -45,6 +45,15 @@ module "key_vault_demo" {
   policies = [
     {
       tenant_id          = "${var.tenant_id}"
+      object_id          = ""
+      key_permissions    = ["backup", "create", "decrypt", "delete", "encrypt", "get", "import", "list", "purge", "recover", "restore", "sign", "unwrapKey", "update", "verify", "wrapKey", ]
+      secret_permissions = ["backup", "delete", "get", "list", "purge", "recover", "restore", "set", ]
+
+      certificate_permissions = ["create", "delete", "deleteissuers", "get", "getissuers", "import", "list", "listissuers", "managecontacts", "manageissuers", "purge",
+      "recover", "setissuers", "update", "backup", "restore", ]
+    },
+    {
+      tenant_id          = "${var.tenant_id}"
       object_id          = "${azuread_group.example.id}"
       key_permissions    = ["backup", "create", "decrypt", "delete", "encrypt", "get", "import", "list", "purge", "recover", "restore", "sign", "unwrapKey", "update", "verify", "wrapKey", ]
       secret_permissions = ["backup", "delete", "get", "list", "purge", "recover", "restore", "set", ]
