@@ -31,7 +31,7 @@ terraform destroy
 
 | Name | Description |
 |------|-------------|
-| key\_vault\_admin\_policy\_id | n/a |
+| key\_vault\_admin\_policy\_ids | n/a |
 | key\_vault\_ids | n/a |
 | key\_vault\_uris | n/a |
 
