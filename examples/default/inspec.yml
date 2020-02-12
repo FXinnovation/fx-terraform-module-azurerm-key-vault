@@ -22,7 +22,7 @@ inputs:
     value: 'francecentral'
     profile: azurerm-key-vault
   - name: resource_group_name
-    value: 'tftest-sa'
+    value: 'tftest-keyvault'
     profile: azurerm-key-vault
   - name: enabled
     value: true
@@ -32,5 +32,5 @@ inputs:
     value: true
     profile: azurerm-resource-group
   - name: name
-    value: 'tftest-sa'
+    value: 'tftest-keyvault'
     profile: azurerm-resource-group

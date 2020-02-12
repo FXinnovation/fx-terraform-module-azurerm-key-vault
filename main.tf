@@ -3,8 +3,10 @@
 ###
 
 locals {
-  should_create_certificate = var.enabled && var.certificate_enabled
-  should_create_secret      = var.enabled && var.secret_enabled
+  should_create_certificate    = var.enabled && var.certificate_enabled
+  should_create_secret         = var.enabled && var.secret_enabled
+  should_create_admin_policy   = var.enabled && var.admin_policy_enabled
+  should_create_key_vault_keys = var.enabled && var.key_vault_keys_enabled
 }
 
 ###
@@ -24,7 +26,7 @@ resource "azurerm_key_vault" "this" {
   enabled_for_template_deployment = var.enabled_for_template_deployment
 
   dynamic "network_acls" {
-    for_each = var.network_acl
+    for_each = var.network_acls
 
     content {
       bypass                     = network_acls.value.bypass
@@ -43,16 +45,40 @@ resource "azurerm_key_vault" "this" {
   )
 }
 
+###
+# Key Vault default admin policy
+###
+
+resource "azurerm_key_vault_access_policy" "admin_policy" {
+  count = local.should_create_admin_policy ? 1 : 0
+
+  key_vault_id       = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
+  tenant_id          = data.azurerm_client_config.current.tenant_id
+  object_id          = data.azurerm_client_config.current.object_id
+  key_permissions    = ["backup", "create", "decrypt", "delete", "encrypt", "get", "import", "list", "purge", "recover", "restore", "sign", "unwrapKey", "update", "verify", "wrapKey", ]
+  secret_permissions = ["backup", "delete", "get", "list", "purge", "recover", "restore", "set", ]
+  certificate_permissions = ["create", "delete", "deleteissuers", "get", "getissuers", "import", "list", "listissuers", "managecontacts", "manageissuers", "purge",
+  "recover", "setissuers", "update", "backup", "restore", ]
+}
+
+###
+# Key Vault access policy
+###
+
 resource "azurerm_key_vault_access_policy" "this_policy" {
   count = var.enabled ? length(var.policies) : 0
 
   key_vault_id            = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
   tenant_id               = lookup(element(var.policies, count.index), "tenant_id", null)
-  object_id               = lookup(element(var.policies, count.index), "object_id", null) == "" ? data.azurerm_client_config.current.object_id : lookup(element(var.policies, count.index), "object_id", null)
+  object_id               = lookup(element(var.policies, count.index), "object_id", null)
   key_permissions         = lookup(element(var.policies, count.index), "key_permissions", null)
   secret_permissions      = lookup(element(var.policies, count.index), "secret_permissions", null)
   certificate_permissions = lookup(element(var.policies, count.index), "certificate_permissions", null)
 }
+
+###
+# Key Vault secret
+###
 
 resource "random_password" "this_password" {
   count = local.should_create_secret ? length(var.key_vault_secrets) : 0
@@ -73,12 +99,16 @@ resource "azurerm_key_vault_secret" "this_secret" {
   depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.this_policy]
   tags = merge(
     var.tags,
-    var.vault_secret_tags,
+    var.key_vault_secret_tags,
     {
       "Terraform" = "true"
     },
   )
 }
+
+###
+# Key Vault certificate
+###
 
 resource "azurerm_key_vault_certificate" "this_certificate" {
   count = local.should_create_certificate ? length(var.certificate_names) : 0
@@ -91,10 +121,10 @@ resource "azurerm_key_vault_certificate" "this_certificate" {
       name = var.issuer_names[count.index]
     }
     key_properties {
-      exportable = var.exportable
+      exportable = var.exportable[count.index]
       key_size   = var.key_sizes[count.index]
       key_type   = var.key_types[count.index]
-      reuse_key  = var.reuse_key
+      reuse_key  = var.reuse_key[count.index]
     }
     secret_properties {
       content_type = var.content_types[count.index]
@@ -104,7 +134,7 @@ resource "azurerm_key_vault_certificate" "this_certificate" {
         action_type = var.action_types[count.index]
       }
       trigger {
-        days_before_expiry = var.days_before_expiry
+        days_before_expiry = var.days_before_expiry[count.index]
       }
     }
   }
@@ -117,8 +147,12 @@ resource "azurerm_key_vault_certificate" "this_certificate" {
   )
 }
 
+###
+# Key Vault key
+###
+
 resource "azurerm_key_vault_key" "this_key" {
-  count = var.enabled ? length(var.key_vault_keys) : 0
+  count = local.should_create_key_vault_keys ? length(var.key_vault_keys) : 0
 
   name         = lookup(element(var.key_vault_keys, count.index), "name", null)
   key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)

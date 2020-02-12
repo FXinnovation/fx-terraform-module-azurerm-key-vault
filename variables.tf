@@ -8,39 +8,39 @@ variable "enabled" {
 }
 
 variable "resource_group_name" {
-  description = "Resource group where the vnet resides."
+  description = "Specifies name of the resource group in which the rsource will be created."
   type        = string
   default     = ""
 }
 
 variable "location" {
-  description = "location of the load_balancer"
+  description = "specifiies the loaction where the Key Vault will be created. changing this will force to created new resource."
   type        = string
   default     = ""
 }
 
 variable "tags" {
-  description = "Tags to add to the Load Balancer"
+  description = "Tags shared by all resources of this module. Will be merged with any other specific tags by resource"
   default     = {}
 }
 
 ###
-# key vault
+# Key Vault
 ###
 
 variable "key_vault_name" {
-  description = "name of the Key vault created"
+  description = "Specifies the name of the Key Vault. Changing this forces a new resource to be created."
   type        = string
   default     = ""
 }
 
 variable "sku_name" {
-  description = "Name of the SKU used for the key vault"
+  description = " The name of the SKU used for the Key Vault. Possible values are `standard` and `premium`."
   default     = "standard"
 }
 
 variable "enabled_for_deployment" {
-  description = "Boolean flag to specify whether Azure VM's are permitted to retrive certificate stored as secret from key vault."
+  description = "Boolean flag to specify whether Azure VM's are permitted to retrive certificate stored as secret from Key Vault."
   default     = false
 }
 
@@ -50,7 +50,7 @@ variable "enabled_for_disk_encryption" {
 }
 
 variable "enabled_for_template_deployment" {
-  description = "Boolean flag to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault."
+  description = "Boolean flag to specify whether Azure Resource Manager is permitted to retrieve secrets from the Key Vault."
   default     = false
 }
 
@@ -60,30 +60,29 @@ variable "ip_rules" {
   default     = []
 }
 
-variable "subnet_id_maps" {
-  description = "One or more Subnet ID's which should be able to access this Key Vault."
-  type        = list(string)
-  default     = [""]
-}
-
-variable "network_acl" {
-  description = "one or more network acls associated to the key vault. Please check the terraform docs for the possible value `https://www.terraform.io/docs/providers/azurerm/r/key_vault_certificate.html`"
+variable "network_acls" {
+  description = "One or more network acls associated to the Key Vault. Please check the terraform docs for the possible value `https://www.terraform.io/docs/providers/azurerm/r/key_vault_certificate.html`"
   default     = []
   type        = list(object({ bypass = string, default_action = string, ip_rules = list(string), virtual_network_subnet_ids = list(string) }))
 }
 
 
 variable "key_vault_tags" {
-  description = "List of tags to which will be added to the key vault."
+  description = "List of tags to which will be added to the Key Vault."
   default     = {}
 }
 
 ###
-# key vault access policy
+# Key Vault access policy
 ###
 
+variable "admin_policy_enabled" {
+  description = "Boolean flag which describes whether to enable the default admin policy or not."
+  default     = false
+}
+
 variable "policies" {
-  description = "List of policies that are created for this key vault."
+  description = "List of policies which will be created for the Key Vault. Changing this will force to create new policy to the Key Vault."
   type = list(object({
     tenant_id               = string
     object_id               = string
@@ -95,89 +94,92 @@ variable "policies" {
 }
 
 ###
-# key vault secret
+# Key Vault secret
 ###
 
 variable "secret_enabled" {
-  description = "Boolean flag to specify whether to create the secret in the key valut or not."
+  description = "Boolean flag which specify whether to create the secret in the key valut or not."
   default     = false
 }
 
 variable "key_vault_secrets" {
-  description = "List of key valut secrets names. Changing this will force to create new secret in the key vault."
+  description = "List of Key Valut secret names. Changing this will force to create new secret in the Key Vault."
   type        = list(string)
   default     = [""]
 }
 
-variable "vault_secret_tags" {
-  description = "Tag that will be added to the ker vault secret"
+variable "key_vault_secret_tags" {
+  description = "Tag that will be added to the Key Vault secret"
   default     = {}
 }
 
 variable "values" {
-  description = "List of key valut secret that will cretaed. changing this will force to create new secret."
+  description = "List of Key Vault secret that will cretaed. changing this will force to create new Key Vault secret."
   type        = list(string)
   default     = [""]
 }
 
 ###
-# key vault certificate
+# Key Vault certificate
 ###
 
 variable "certificate_enabled" {
-  description = "Boolean flag to enable the key vault certificate"
+  description = "Boolean flag which describes whether to  enable the Key Vault certificate or not."
   default     = false
 }
 
 variable "certificate_names" {
-  description = "Name of the key vault certificate."
+  description = "List of Key Vault certificate names. Changing will force to create new Key Vault certificate."
   type        = list(string)
   default     = []
 }
 
 variable "issuer_names" {
-  description = "The name of the Certificate Issuer. Possible values ( `Self`(for self-signed) or `unknown`(for a certificate issuing authority like Let's Encrypt and Azure direct supported one. )"
+  description = "List of Certificate Issuer names. Possible values ( `Self`(for self-signed) or `unknown`(for a certificate issuing authority like Let's Encrypt and Azure direct supported one. )"
   type        = list(string)
   default     = []
 }
 
 variable "exportable" {
-  description = "Boolean flag to define is this Certificate Exportable"
-  default     = false
+  description = "Boolean flag which define is this Certificate Exportable or not."
+  type        = list(bool)
+  default     = [false]
 }
 
 variable "reuse_key" {
-  description = "Boolean flag to decide whether to use the existing key again or not"
-  default     = false
+  description = "Boolean flag which describes whether to use the existing key again or not"
+  type        = list(bool)
+  default     = [false]
 }
 
 variable "key_sizes" {
-  description = "The size of the Key used in the Certificate"
+  description = "List of key sizes of the key used to create certificate. Possible values include `2048` and `4096`. Changing this forces a new resource to be created.  "
   type        = list(string)
   default     = [""]
 }
 
 variable "key_types" {
-  description = "The type of the key wich will be created such as `RSA`. changing this forces a new resourceto be created."
+  description = "List of type of the key wich will be created such as `RSA`. changing this forces a new resourceto be created."
   type        = list(string)
   default     = [""]
 }
 
 variable "content_types" {
-  description = "The Content-Type of the Certificate, such as `application/x-pkcs12` for a PFX or `application/x-pem-file` for a PEM."
+  description = "List of  content-type of the certificate, such as `application/x-pkcs12` for a PFX or `application/x-pem-file` for a PEM."
   type        = list(string)
   default     = [""]
 }
 
 variable "action_types" {
-  description = "The Type of action to be performed when the lifetime trigger is triggerec.possible values include `Autorenew` & ``EmailContacts. changing this forces a new resource to be created. "
+  description = "List of type of action to be performed when the lifetime trigger is triggerec.possible values include `Autorenew` & ``EmailContacts. changing this forces a new resource to be created. "
   type        = list(string)
   default     = [""]
 }
 
 variable "days_before_expiry" {
-  description = "The number of days before the Certificate expires that the action associated with this Trigger should run."
-  default     = 30
+  description = "List of number of days before the certificate expires that the action associated with this Trigger should run.changing this forces a new resource to be created."
+  type        = list(number)
+  default     = [30]
 }
 
 variable "certificate_tags" {
@@ -186,11 +188,16 @@ variable "certificate_tags" {
 }
 
 ###
-# key vault keys
+# Key Vault keys
 ###
 
+variable "key_vault_keys_enabled" {
+  description = "Boolean flag which describes whether to enable to Key Vault keys or not."
+  default     = false
+}
+
 variable "key_vault_keys" {
-  description = "Map of the key attributes."
+  description = "List of keys which will be created for the Key Vault. Changing this will force to create new key to the Key Vault."
   type = list(object({
     name     = string
     key_type = string
@@ -202,6 +209,6 @@ variable "key_vault_keys" {
 }
 
 variable "key_vault_key_tags" {
-  description = "Tags to add to the key vault_key"
+  description = "Tags to add to the Key Vault_key"
   default     = {}
 }

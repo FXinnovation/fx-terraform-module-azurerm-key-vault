@@ -12,12 +12,12 @@ resource "azuread_group" "example" {
 
 
 resource "azurerm_resource_group" "example" {
-  name     = "tftest${random_string.this.result}"
+  name     = "tftest-keyvault"
   location = "francecentral"
 }
 
 resource "azurerm_virtual_network" "example" {
-  name                = "fxtoto"
+  name                = "fxtoto${random_string.this.result}"
   address_space       = ["192.172.0.0/16"]
   location            = "francecentral"
   resource_group_name = azurerm_resource_group.example.name
@@ -33,11 +33,11 @@ resource "azurerm_subnet" "example" {
 
 module "key_vault_demo" {
   source              = "../.."
-  key_vault_name      = "fxtst${random_string.this.result}"
+  key_vault_name      = "fxtstkeyvault"
   location            = "francecentral"
   resource_group_name = azurerm_resource_group.example.name
   sku_name            = "standard"
-  network_acl = [
+  network_acls = [
     {
       bypass                     = "AzureServices"
       default_action             = "Allow"
@@ -45,16 +45,8 @@ module "key_vault_demo" {
       virtual_network_subnet_ids = ["${azurerm_subnet.example.id}"]
     }
   ]
+  admin_policy_enabled = true
   policies = [
-    {
-      tenant_id          = "${var.tenant_id}"
-      object_id          = ""
-      key_permissions    = ["backup", "create", "decrypt", "delete", "encrypt", "get", "import", "list", "purge", "recover", "restore", "sign", "unwrapKey", "update", "verify", "wrapKey", ]
-      secret_permissions = ["backup", "delete", "get", "list", "purge", "recover", "restore", "set", ]
-
-      certificate_permissions = ["create", "delete", "deleteissuers", "get", "getissuers", "import", "list", "listissuers", "managecontacts", "manageissuers", "purge",
-      "recover", "setissuers", "update", "backup", "restore", ]
-    },
     {
       tenant_id          = "${var.tenant_id}"
       object_id          = "${azuread_group.example.id}"
@@ -66,9 +58,9 @@ module "key_vault_demo" {
     }
   ]
 
-  key_vault_secrets   = ["foo"]
-  values              = ["thisistestvalue"]
-  secret_enabled      = true
-  certificate_enabled = false
-  key_vault_keys      = []
+  key_vault_secrets      = ["foo"]
+  values                 = ["thisistestvalue"]
+  secret_enabled         = true
+  certificate_enabled    = false
+  key_vault_keys_enabled = false
 }

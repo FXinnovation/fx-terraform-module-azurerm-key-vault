@@ -1,51 +1,54 @@
 ###
-# key vault
+# Key Vault
 ###
 
 output "key_vault_ids" {
-  description = "ID of the key vault"
-  value       = azurerm_key_vault.this.*.id
+  description = "IDs of the Key vVult"
+  value       = compact(concat(azurerm_key_vault.this.*.id, [""]))
 }
 
 output "key_vault_urls" {
-  description = "URI of the key created"
-  value       = azurerm_key_vault.this.*.vault_uri
+  description = "URIs of the Key Vault created, used for performing operationson keys and secrets."
+  value       = compact(concat(azurerm_key_vault.this.*.vault_uri, [""]))
 }
 
 ###
-# key vault access policy
+# Key Vault access policy
 ###
 
 output "key_vault_policy_ids" {
-  value = azurerm_key_vault_access_policy.this_policy.*.id
+  description = "IDs of the Key Vault access policies."
+  value       = compact(concat(azurerm_key_vault_access_policy.this_policy.*.id, [""]))
 }
 
 ###
-# key vault secret
+# Key Vault secret
 ###
 
 output "secret_ids" {
-  value = azurerm_key_vault_secret.this_secret.*.id
+  description = "IDs of the Key Vault secrets. "
+  value       = compact(concat(azurerm_key_vault_secret.this_secret.*.id, [""]))
 }
 
 ###
-# key vault certificate
+# Key Vault certificate
 ###
 
 output "key_vault_certificate_ids" {
-  description = "Key vault certificate id"
-  value       = azurerm_key_vault_certificate.this_certificate.*.id
+  description = "IDs of the Key vault certificates."
+  value       = compact(concat(azurerm_key_vault_certificate.this_certificate.*.id, [""]))
 }
 
 output "thumbprint" {
-  description = "Thumbprint of the key vault certificate"
-  value       = azurerm_key_vault_certificate.this_certificate.*.thumbprint
+  description = "Thumbprints of the Key Vault certificates."
+  value       = compact(concat(azurerm_key_vault_certificate.this_certificate.*.thumbprint, [""]))
 }
 
 ###
-# key vault key
+# Key Vault key
 ###
 
 output "key_vault_key_ids" {
-  value = azurerm_key_vault_key.this_key.*.id
+  description = "IDs of the Key Vault keys."
+  value       = compact(concat(azurerm_key_vault_key.this_key.*.id, [""]))
 }
