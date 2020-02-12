@@ -96,7 +96,7 @@ resource "azurerm_key_vault_secret" "this_secret" {
   name         = element(var.key_vault_secrets, count.index)
   value        = element(var.values, count.index) != "" ? element(var.values, count.index) : random_password.this_password[count.index].result
   key_vault_id = element(concat(azurerm_key_vault.this.*.id, [""]), 0)
-  depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.this_policy]
+  depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.admin_policy, azurerm_key_vault_access_policy.this_policy]
   tags = merge(
     var.tags,
     var.key_vault_secret_tags,
@@ -160,7 +160,7 @@ resource "azurerm_key_vault_key" "this_key" {
   key_size     = lookup(element(var.key_vault_keys, count.index), "key_size", null)
   key_opts     = lookup(element(var.key_vault_keys, count.index), "key_opts", null)
   curve        = lookup(element(var.key_vault_keys, count.index), "curve", null)
-  depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.this_policy]
+  depends_on   = [azurerm_key_vault.this, azurerm_key_vault_access_policy.admin_policy, azurerm_key_vault_access_policy.this_policy]
   tags = merge(
     var.tags,
     var.key_vault_key_tags,
