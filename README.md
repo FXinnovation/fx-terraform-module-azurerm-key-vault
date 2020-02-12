@@ -57,6 +57,7 @@ See `examples` folders for usage of this module.
 
 | Name | Description |
 |------|-------------|
+| key\_vault\_admin\_policy\_ids | IDs of the default admins policy. |
 | key\_vault\_certificate\_ids | IDs of the Key vault certificates. |
 | key\_vault\_ids | IDs of the Key vVult |
 | key\_vault\_key\_ids | IDs of the Key Vault keys. |

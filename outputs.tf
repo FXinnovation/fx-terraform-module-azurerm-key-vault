@@ -16,6 +16,11 @@ output "key_vault_urls" {
 # Key Vault access policy
 ###
 
+output "key_vault_admin_policy_ids" {
+  description = "IDs of the default admins policy."
+  value       = compact(concat(azurerm_key_vault_access_policy.admin_policy.*.id, [""]))
+}
+
 output "key_vault_policy_ids" {
   description = "IDs of the Key Vault access policies."
   value       = compact(concat(azurerm_key_vault_access_policy.this_policy.*.id, [""]))
