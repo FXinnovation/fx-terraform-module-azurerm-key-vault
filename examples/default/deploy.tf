@@ -12,7 +12,7 @@ resource "azuread_group" "example" {
 
 
 resource "azurerm_resource_group" "example" {
-  name     = "tftest-keyvault"
+  name     = "tftest${random_string.this.result}"
   location = "francecentral"
 }
 
@@ -33,7 +33,7 @@ resource "azurerm_subnet" "example" {
 
 module "key_vault_demo" {
   source              = "../.."
-  key_vault_name      = "fxtstkeyvault"
+  key_vault_name      = "fxtst${random_string.this.result}"
   location            = "francecentral"
   resource_group_name = azurerm_resource_group.example.name
   sku_name            = "standard"
