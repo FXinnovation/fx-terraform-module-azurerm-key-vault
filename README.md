@@ -13,7 +13,7 @@ See `examples` folders for usage of this module.
 
 | Name | Version |
 |------|---------|
-| azurerm | n/a |
+| azurerm | >= 2.0.0 |
 | random | n/a |
 
 ## Inputs
