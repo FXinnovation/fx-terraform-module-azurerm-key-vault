@@ -9,18 +9,25 @@ See `examples` folders for usage of this module.
 - Cannot Import the existing Certificate to the Key Vault. Will be implemented soon.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+| azurerm | >= 2.0.0 |
+
 ## Providers
 
 | Name | Version |
 |------|---------|
-| azurerm | n/a |
+| azurerm | >= 2.0.0 |
 | random | n/a |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
-| action\_types | List of type of action to be performed when the lifetime trigger is triggerec.possible values include `Autorenew` & `EmailContacts. changing this forces a new resource to be created.` | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
+|------|-------------|------|---------|:--------:|
+| action\_types | List of type of action to be performed when the lifetime trigger is triggerec.possible values include `Autorenew` & `EmailContacts. changing this forces a new resource to be created. ` | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 | admin\_policy\_enabled | Boolean flag which describes whether to enable the default admin policy or not. | `bool` | `false` | no |
 | certificate\_enabled | Boolean flag which describes whether to  enable the Key Vault certificate or not. | `bool` | `false` | no |
 | certificate\_names | List of Key Vault certificate names. Changing will force to create new Key Vault certificate. | `list(string)` | `[]` | no |
