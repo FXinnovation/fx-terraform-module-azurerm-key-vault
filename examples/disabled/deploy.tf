@@ -1,5 +1,5 @@
 module "resource_group_demo" {
-  source = "git::ssh://git@github.com/FXinnovation/fx-terraform-module-azurerm-resource-group.git?ref=0.2.0"
+  source = "github.com/FXinnovation/fx-terraform-module-azurerm-resource-group.git?ref=0.2.0"
 
   enabled  = false
   location = "francecentral"
